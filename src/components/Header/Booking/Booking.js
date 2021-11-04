@@ -41,7 +41,7 @@ const Booking = () => {
   const [loading, setLoading] = useState(false)
 
   const [fromDate, setFromDate] = useState(new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString())
-  const [toDate, setToDate] = useState(new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString())
+  const [toDate, setToDate] = useState(new Date(new Date().setUTCHours(23, 59, 59, 59)).toISOString())
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [totalItem, setTotalItem] = useState(0)
