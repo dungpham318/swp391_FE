@@ -27,6 +27,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Modal from '../../custom/Modal'
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import { useLocation } from 'react-router-dom'
 
 import {
   getUserListApi,
@@ -36,6 +37,7 @@ import {
 } from '../../../api/bookingApi';
 
 const Booking = () => {
+  let location = useLocation()
   const [loading, setLoading] = useState(false)
 
   const [fromDate, setFromDate] = useState(new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString())
@@ -48,8 +50,8 @@ const Booking = () => {
   const [subjectList, setSubjectList] = useState([])
   const [appointmentList, setAppointmentList] = useState([])
 
-  const [selectedMentor, setSelectedMentor] = useState(undefined)
-  const [selectedSubject, setSelectedSubject] = useState(undefined)
+  const [selectedMentor, setSelectedMentor] = useState(location?.state?.name ? location?.state?.name : undefined)
+  const [selectedSubject, setSelectedSubject] = useState(location?.state?.subject ? location?.state?.subject : undefined)
   const [selectedAppointment, setSelectedAppointment] = useState(undefined)
 
   const [studentList, setStudentList] = useState([])
@@ -58,8 +60,20 @@ const Booking = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
 
   useEffect(() => {
-    getMentorList()
-    getSubjectList()
+    let tmp = async () => {
+      await getMentorList()
+      await getSubjectList()
+      if (location?.state?.subject) {
+        location.state.subject.label = location?.state?.subject?.name
+        setSelectedSubject(location?.state?.subject)
+      }
+      if (location?.state?.name) {
+        console.log(775555, location.state.name)
+        location.state.name.label = location?.state?.name?.fullName
+        setSelectedMentor(location?.state?.name)
+      }
+    }
+    tmp()
   }, [])
 
   useEffect(() => {
@@ -69,6 +83,11 @@ const Booking = () => {
   useEffect(() => {
     getSubjectList()
   }, [selectedMentor])
+
+  useEffect(() => {
+    getMentorList()
+  }, [selectedSubject])
+
 
   const getMentorList = async () => {
     setLoading(true)
@@ -109,7 +128,6 @@ const Booking = () => {
       page: 1,
       pageSize: 1000,
     }
-    console.log(selectedMentor)
     if (selectedMentor) {
       Object.assign(input, { mentorID: selectedMentor.id })
     }
@@ -186,6 +204,8 @@ const Booking = () => {
             <Autocomplete
               value={selectedMentor}
               onChange={(event, newValue) => {
+                console.log(8435734857438, newValue)
+
                 setSelectedMentor(newValue);
               }}
               // inputValue={inputValue}
@@ -239,6 +259,8 @@ const Booking = () => {
                   label="To Date"
                   value={toDate}
                   onChange={(date) => {
+                    date = new Date(new Date(date).setHours(23, 59, 59))
+                    console.log(date)
                     if (new Date(date).getTime() - new Date(fromDate).getTime() < 0) {
                       alert('To Date must be larger than From Date')
                     } else {
