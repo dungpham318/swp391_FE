@@ -152,6 +152,10 @@ const MentorDashboard = () => {
 
   const createAppointment = async () => {
     let timeList = []
+    if (new Date(appointmentFromDate).setHours(0, 0, 0, 0) > new Date(appointmentToDate).setHours(0, 0, 0, 0)) {
+      alert('To Date must larger than From Date')
+      return
+    }
     let tmpFromDate = new Date(new Date(appointmentFromDate).setHours(0, 0, 0, 0))
     let tmpToDate = new Date(new Date(appointmentToDate).setHours(0, 0, 0, 0))
     let fromHour = new Date(appointmentFromTime).getHours()
